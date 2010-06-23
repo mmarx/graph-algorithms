@@ -1,0 +1,69 @@
+Inhalt:
+LICENSE - Lizenz
+*.[ch]pp - Quelltext
+Makefile - ein Makefile fuer GNU Make
+doc/ - per Doxygen generierte Programmdokumentation
+examples/ - Beispielgraphdateien:
+ - no-cycles - Zyklenfreier Graph
+ - cycles-with-positive-total-weight - Graph mit Zyklen, die positive
+   				       Gesamtgewichte haben
+ - cycles-with-negative-total-weight - Graph mit Zyklen, die negative
+   				       Gesamtgewichte haben
+
+Das Programm hat abgesehen von der C++-Standardbibliothek keinerlei
+Abhaengigkeiten.
+
+Uebersetzen lassen sollte sich das Programm mit jedem halbwegs konformen
+C++-Compiler, getestet habe ich mit gcc 4.1.2 auf IA32 und gcc 4.4.0 auf AMD64:
+--8<--------------------------------------------------------------------------
+mmarx@atlantis ~/fm $ lsb_release -a
+LSB Version:	core-2.0-ia32:core-2.0-noarch:core-3.0-ia32:core-3.0-noarch:core-3.1-ia32:core-3.1-noarch:core-3.2-ia32:core-3.2-noarch
+Distributor ID:	Debian
+Description:	Debian GNU/Linux 4.0 (etch)
+Release:	4.0
+Codename:	etch
+mmarx@atlantis ~/fm $ g++ -v
+Using built-in specs.
+Target: i486-linux-gnu
+Configured with: ../src/configure -v --enable-languages=c,c++,fortran,objc,obj-c++,treelang --prefix=/usr --enable-shared --with-system-zlib --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --enable-nls --program-suffix=-4.1 --enable-__cxa_atexit --enable-clocale=gnu --enable-libstdcxx-debug --enable-mpfr --with-tune=i686 --enable-checking=release i486-linux-gnu
+Thread model: posix
+gcc version 4.1.2 20061115 (prerelease) (Debian 4.1.1-21)
+mmarx@atlantis ~/fm $ make CXX=g++
+g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o edge.o edge.cpp
+g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o path.o path.cpp
+g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o graph.o graph.cpp
+g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o ford_moore.o ford_moore.cpp
+g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o detect_cycle.o detect_cycle.cpp
+g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o fm.o fm.cpp
+g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror -o fm edge.o path.o graph.o ford_moore.o detect_cycle.o fm.o
+mmarx@atlantis ~/fm $ ./fm
+usage: fm <graph data file>
+mmarx@atlantis ~/fm $ 
+-->8--------------------------------------------------------------------------
+--8<--------------------------------------------------------------------------
+mmarx@korenchkin (225) ford-moore % lsb_release -a
+LSB Version:	core-2.0-amd64:core-2.0-noarch:core-3.0-amd64:core-3.0-noarch:core-3.1-amd64:core-3.1-noarch:core-3.2-amd64:core-3.2-noarch
+Distributor ID:	Debian
+Description:	Debian GNU/Linux 4.3 (n/a)
+Release:	4.3
+Codename:	n/a
+mmarx@korenchkin (226) ford-moore % cat /etc/debian_version
+squeeze/sid                         
+mmarx@korenchkin (227) ford-moore % g++-4.4 -v
+Using built-in specs.               
+Target: x86_64-linux-gnu
+Configured with: ../src/configure -v --with-pkgversion='Debian 4.4.0-10' --with-bugurl=file:///usr/share/doc/gcc-4.4/README.Bugs --enable-languages=c,c++,fortran,objc,obj-c++ --prefix=/usr --enable-shared --enable-multiarch --with-system-zlib --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --with-gxx-include-dir=/usr/include/c++/4.4 --program-suffix=-4.4 --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-mpfr --enable-objc-gc --with-arch-32=i486 --with-tune=generic --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu
+Thread model: posix
+gcc version 4.4.0 (Debian 4.4.0-10) 
+mmarx@korenchkin (228) ford-moore % make      
+g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o edge.o edge.cpp
+g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o path.o path.cpp
+g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o graph.o graph.cpp
+g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o ford_moore.o ford_moore.cpp
+g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o detect_cycle.o detect_cycle.cpp
+g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o fm.o fm.cpp
+g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror -o fm edge.o path.o graph.o ford_moore.o detect_cycle.o fm.o
+mmarx@korenchkin (229) ford-moore % ./fm
+usage: fm <graph data file>
+mmarx@korenchkin (230) ford-moore % 
+--8<--------------------------------------------------------------------------

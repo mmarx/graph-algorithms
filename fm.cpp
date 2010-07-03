@@ -1,5 +1,5 @@
 /*
- * (c) 2009 Maximilian Marx <mmarx@wh2.tu-dresden.de>
+ * (c) 2010 Maximilian Marx <mmarx@wh2.tu-dresden.de>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -15,6 +15,8 @@
  */
 
 #include <iostream>
+
+#include <graph.hpp>
 
 /**
  * main program.

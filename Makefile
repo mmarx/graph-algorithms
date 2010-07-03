@@ -3,7 +3,8 @@ MODE := DEBUG
 DEBUGFLAGS := -O0 -ggdb
 RELEASEFLAGS := -O3
 
-CXXFLAGS := $($(MODE)FLAGS) -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror
+CXXFLAGS := $($(MODE)FLAGS) -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror -I.
+CXXSTDINCLUDES := -Y
 
 SOURCES := fm.cpp
 
@@ -32,6 +33,10 @@ dist: clean doc-clean fm strip doc
 depend:
 	makedepend $(CXXSTDINCLUDES) -- $(CXXFLAGS) -- $(SOURCES) 2&> /dev/null
 
-.PHONY: clean doc
+all: strip
+
+.PHONY: clean doc all
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+
+fm.o: ./graph.hpp

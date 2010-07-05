@@ -39,4 +39,4 @@ all: strip
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-fm.o: ./graph.hpp
+fm.o: ./graph.hpp tr1_memory.hpp noncopyable.hpp

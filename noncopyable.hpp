@@ -14,30 +14,13 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <iostream>
+#ifndef FM_NONCOPYABLE_HPP
+#define FM_NONCOPYABLE_HPP
 
-#include <graph.hpp>
-
-/**
- * main program.
- *
- * \param argc number of arguments given on the command line, at least one
- * \param argv vector of command line arguments; argv[0] contains the
- * executable name
- *
- * \return status code, 1 if no graph data file was specified, 0 else
- */
-
-int main(int argc, char** argv)
+class noncopyable
 {
-  (void) argc, (void) argv;
+private:
+  noncopyable(const noncopyable& other);
+};
 
-  std::cout << "Hello, World!" << std::endl;
-
-  //Directed_Graph<double> d(3);
-  shared_ptr<Directed_Graph<double> > d = graph_from_file<double>("examples/simple.dat");
-
-  std::cout << (*d) << std::endl;
-
-  return 1;
-}
+#endif

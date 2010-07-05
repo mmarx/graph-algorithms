@@ -167,6 +167,8 @@ ostream& operator<<(ostream& out, Graph<W> const& g)
 template<typename W>
 shared_ptr<Directed_Graph<W> >  graph_from_file(string const& filename)
 {
+  using std::cerr;
+  using std::endl;
   using std::ifstream;
 
   unsigned int vertices, edges;
@@ -182,7 +184,15 @@ shared_ptr<Directed_Graph<W> >  graph_from_file(string const& filename)
   for(unsigned int i = 1; i <= edges; ++i)
     {
       file >> source >> sink >> weight;
-      graph->add_edge(source, sink, weight);
+
+      if (weight >= 0)
+	{
+	  graph->add_edge(source, sink, weight);
+	}
+      else
+	{
+	  cerr << "-!- negative edge weight, ignoring." << endl;
+	}
     }
 
   return graph;

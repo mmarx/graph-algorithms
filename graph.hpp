@@ -46,10 +46,11 @@ template<typename W>
 class directed_edge_iterator : public edge_iterator<W>
 {
 private:
-  directed_edge_iterator() {}
+  directed_edge_iterator() : valid(false) {}
   directed_edge_iterator(int start, int end, int pos,
 			 shared_ptr<Directed_Graph<W> > graph)
-    : start_(start), end_(end), vertex_(start), edge_(pos), graph_(graph) {}
+    : start_(start), end_(end), vertex_(start), edge_(pos),
+      graph_(graph), valid(true) {}
   ~directed_edge_iterator() {}
 
   int start_;
@@ -62,7 +63,8 @@ private:
 public:
   W const weight() const
   {
-    return graph_->weight(edge_);
+    return 0;
+    //return graph_->weight(edge_);
   }
 
   directed_edge_iterator& operator++()
@@ -79,7 +81,7 @@ struct Graph
   virtual int vertex_count() const = 0;
   virtual int edge_count() const = 0;
   virtual ostream& format_adjacency(ostream& out) const = 0;
-  // virtual weight_type weight(int edge) = 0;
+  virtual weight_type weight(int source, int sink) const = 0;
   // virtual edge_iterator<W> edges() = 0;
   // virtual edge_iterator<W> entering(int vertex) = 0;
   // virtual edge_iterator<W> leaving(int vertex) = 0;
@@ -96,13 +98,13 @@ public:
 					      shared_ptr<W> >
 					    (new shared_ptr<W>[vertices]))
   {
-    for(int i = 0; i < vertices; ++i)
+    for(int i = 1; i <= vertices; ++i)
       {
-	adjacency_.get()[i] = shared_array(new W[vertices]);
+	adjacency_.get()[i - 1] = shared_array(new W[vertices]);
 
-	for(int j = 0; j < vertices; ++j)
+	for(int j = 1; j <= vertices; ++j)
 	  {
-	    adjacency_.get()[i].get()[j] = numeric_limits<W>::infinity();
+	    adj(i, j) = numeric_limits<W>::infinity();
 	  }
       }
   }
@@ -117,20 +119,25 @@ public:
     return edges_;
   }
 
+  W weight(int source, int sink) const
+  {
+    return adj(source, sink);
+  }
+
   void add_edge(int source, int sink, W weight)
   {
-    adjacency_.get()[source - 1].get()[sink - 1] = weight;
+    adj(source, sink) = weight;
   }
 
   ostream& format_adjacency(ostream& out) const
   {
     using std::endl;
 
-    for(int i = 0; i < vertices_; ++i)
+    for(int i = 1; i <= vertices_; ++i)
       {
-	for(int j = 0; j < vertices_; ++j)
+	for(int j = 1; j <= vertices_; ++j)
 	  {
-	    out << adjacency_.get()[i].get()[j] << "\t";
+	    out << adj(i, j) << "\t";
 	  }
 	out << endl;
       }
@@ -138,10 +145,28 @@ public:
     return out;
   }
 
+protected:
+  // helpers for adjacency matrix indexing
+  // TR1 doesn't specify shared_array which has operator[],
+  // so we wouldn't need this .get()[] magic, but we'd have
+  // to depend on boost
+
+  W& adj(int source, int sink)
+  {
+    return adjacency_.get()[source - 1].get()[sink - 1];
+  }
+
+  W adj(int source, int sink) const
+  {
+    return adjacency_.get()[source - 1].get()[sink - 1];
+  }
+
 private:
   int edges_;
   int vertices_;
   shared_ptr<shared_ptr<W> > adjacency_;
+
+  friend class directed_edge_iterator<W>;
 };
 
 template<typename W>
@@ -155,8 +180,9 @@ ostream& operator<<(ostream& out, Graph<W> const& g)
   using std::endl;
   out << "Graph with " << g.vertex_count()
       << " vertices and " << g.edge_count()
-      << " edges." << endl;
-    //     << "Source is " << g.source()
+      << " edges." << endl
+    //      << "Source is " << g.source()
+      << "." << endl;
 
   out << "Adjacency matrix:" << endl;
   g.format_adjacency(out);

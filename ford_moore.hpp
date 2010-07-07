@@ -148,7 +148,8 @@ list<path<W> > ford_moore(shared_ptr<Directed_Graph<W> > graph)
 
       cp.cost = d[i];
 
-      while(true)
+      // don't loop forever if we have cycles
+      for(int i = 0; i < n; ++i)
 	{
 	  cp.vertices.push_front(j);
 

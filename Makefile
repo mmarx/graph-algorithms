@@ -22,7 +22,6 @@ strip: fm
 
 dist: clean fm strip
 	git archive --format=zip --output=$(DIST_ARCHIVE_FILE) HEAD
-	zip -r $(DIST_ARCHIVE_FILE) .git/
 
 depend:
 	makedepend $(CXXSTDINCLUDES) -- $(CXXFLAGS) -- $(SOURCES) 2&> /dev/null

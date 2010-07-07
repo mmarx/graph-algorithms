@@ -2,68 +2,64 @@ Inhalt:
 LICENSE - Lizenz
 *.[ch]pp - Quelltext
 Makefile - ein Makefile fuer GNU Make
-doc/ - per Doxygen generierte Programmdokumentation
 examples/ - Beispielgraphdateien:
- - no-cycles - Zyklenfreier Graph
- - cycles-with-positive-total-weight - Graph mit Zyklen, die positive
+ - no-cycles - Zyklenfreier Graph mit 10 Knoten
+ - example-2 - Zyklenfreier Graph mit 10 Knoten
+ - cycles-with-positive-total-weight* - Graph mit Zyklen, die positive
    				       Gesamtgewichte haben
  - cycles-with-negative-total-weight - Graph mit Zyklen, die negative
    				       Gesamtgewichte haben
+ - complete* - vollstaendiger Graph mit 10 Knoten
+ - full* - vollstaendiger Graph mit 10 Knoten und Id-Schleifen
+ - random* - zufaelliger Graph mit 23 Knoten
 
-Das Programm hat abgesehen von der C++-Standardbibliothek keinerlei
-Abhaengigkeiten.
+Mit * markierte Beispiel enthalten Zyklen mit positiven Gesamtgewichten,
+bei denen die Berechnung der laengsten Pfade nicht sinnvoll ist.
+
+Das Programm setzt eine C++-Standardbibliothek voraus, die die
+Erweiterung nach ISO/IEC TR 19768 (C++ TR1) unterstuetzt. Dies ist
+insbesondere bei aktuellen Versionen von GCC und MSVC der Fall.
+Sollte eine solche nicht vorliegen, kann die Funktionalitaet auch
+durch die boost-Bibliotheken[0] zur Verfuegung gestellt werden.
 
 Uebersetzen lassen sollte sich das Programm mit jedem halbwegs konformen
-C++-Compiler, getestet habe ich mit gcc 4.1.2 auf IA32 und gcc 4.4.0 auf AMD64:
+C++-Compiler, getestet habe ich mit gcc 4.1.2 auf IA32 und gcc 4.4.4 auf AMD64:
 --8<--------------------------------------------------------------------------
-mmarx@atlantis ~/fm $ lsb_release -a
-LSB Version:	core-2.0-ia32:core-2.0-noarch:core-3.0-ia32:core-3.0-noarch:core-3.1-ia32:core-3.1-noarch:core-3.2-ia32:core-3.2-noarch
-Distributor ID:	Debian
-Description:	Debian GNU/Linux 4.0 (etch)
-Release:	4.0
-Codename:	etch
-mmarx@atlantis ~/fm $ g++ -v
-Using built-in specs.
-Target: i486-linux-gnu
-Configured with: ../src/configure -v --enable-languages=c,c++,fortran,objc,obj-c++,treelang --prefix=/usr --enable-shared --with-system-zlib --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --enable-nls --program-suffix=-4.1 --enable-__cxa_atexit --enable-clocale=gnu --enable-libstdcxx-debug --enable-mpfr --with-tune=i686 --enable-checking=release i486-linux-gnu
-Thread model: posix
-gcc version 4.1.2 20061115 (prerelease) (Debian 4.1.1-21)
-mmarx@atlantis ~/fm $ make CXX=g++
-g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o edge.o edge.cpp
-g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o path.o path.cpp
-g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o graph.o graph.cpp
-g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o ford_moore.o ford_moore.cpp
-g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o detect_cycle.o detect_cycle.cpp
-g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o fm.o fm.cpp
-g++ -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror -o fm edge.o path.o graph.o ford_moore.o detect_cycle.o fm.o
-mmarx@atlantis ~/fm $ ./fm
-usage: fm <graph data file>
-mmarx@atlantis ~/fm $ 
+marx@NBTW10 (1464) ford-moore % lsb_release -a
+LSB Version:	:core-3.1-ia32:core-3.1-noarch:graphics-3.1-ia32:graphics-3.1-noarch
+Distributor ID:	CentOS
+Description:	CentOS release 5.5 (Final)
+Release:	5.5
+Codename:	Final
+marx@NBTW10 (1465) ford-moore % g++ -v        
+Es werden eingebaute Spezifikationen verwendet.
+Ziel: i386-redhat-linux
+Konfiguriert mit: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-libgcj-multifile --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --enable-plugin --with-java-home=/usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre --with-cpu=generic --host=i386-redhat-linux
+Thread-Modell: posix
+gcc-Version 4.1.2 20080704 (Red Hat 4.1.2-48)
+marx@NBTW10 (1466) ford-moore % make          
+g++ -O0 -ggdb -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror -I.   -c -o fm.o fm.cpp
+g++ -O0 -ggdb -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror -I. -o fm fm.o
+marx@NBTW10 (1467) ford-moore % 
 -->8--------------------------------------------------------------------------
+
 --8<--------------------------------------------------------------------------
-mmarx@korenchkin (225) ford-moore % lsb_release -a
+mmarx@korenchkin (2853) ford-moore % lsb_release -a
 LSB Version:	core-2.0-amd64:core-2.0-noarch:core-3.0-amd64:core-3.0-noarch:core-3.1-amd64:core-3.1-noarch:core-3.2-amd64:core-3.2-noarch
 Distributor ID:	Debian
-Description:	Debian GNU/Linux 4.3 (n/a)
-Release:	4.3
-Codename:	n/a
-mmarx@korenchkin (226) ford-moore % cat /etc/debian_version
-squeeze/sid                         
-mmarx@korenchkin (227) ford-moore % g++-4.4 -v
-Using built-in specs.               
+Description:	Debian GNU/Linux unstable (sid)
+Release:	unstable
+Codename:	sid
+mmarx@korenchkin (2854) ford-moore % g++ -v
+Using built-in specs.
 Target: x86_64-linux-gnu
-Configured with: ../src/configure -v --with-pkgversion='Debian 4.4.0-10' --with-bugurl=file:///usr/share/doc/gcc-4.4/README.Bugs --enable-languages=c,c++,fortran,objc,obj-c++ --prefix=/usr --enable-shared --enable-multiarch --with-system-zlib --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --with-gxx-include-dir=/usr/include/c++/4.4 --program-suffix=-4.4 --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-mpfr --enable-objc-gc --with-arch-32=i486 --with-tune=generic --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu
+Configured with: ../src/configure -v --with-pkgversion='Debian 4.4.4-6' --with-bugurl=file:///usr/share/doc/gcc-4.4/README.Bugs --enable-languages=c,c++,fortran,objc,obj-c++ --prefix=/usr --enable-shared --enable-multiarch --enable-linker-build-id --with-system-zlib --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --with-gxx-include-dir=/usr/include/c++/4.4 --program-suffix=-4.4 --enable-nls --enable-clocale=gnu --enable-libstdcxx-debug --enable-objc-gc --with-arch-32=i586 --with-tune=generic --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu
 Thread model: posix
-gcc version 4.4.0 (Debian 4.4.0-10) 
-mmarx@korenchkin (228) ford-moore % make      
-g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o edge.o edge.cpp
-g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o path.o path.cpp
-g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o graph.o graph.cpp
-g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o ford_moore.o ford_moore.cpp
-g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o detect_cycle.o detect_cycle.cpp
-g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror   -c -o fm.o fm.cpp
-g++-4.4 -O3 -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror -o fm edge.o path.o graph.o ford_moore.o detect_cycle.o fm.o
-mmarx@korenchkin (229) ford-moore % ./fm
-usage: fm <graph data file>
-mmarx@korenchkin (230) ford-moore % 
+gcc version 4.4.4 (Debian 4.4.4-6) 
+mmarx@korenchkin (2855) ford-moore % make
+g++ -O0 -ggdb -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror -I.   -c -o fm.o fm.cpp
+g++ -O0 -ggdb -pedantic -pedantic-errors -ansi -std=c++98 -Wall -Wextra -Werror -I. -o fm fm.o
+mmarx@korenchkin (2856) ford-moore % 
 --8<--------------------------------------------------------------------------
+
+[0] http://boost.org

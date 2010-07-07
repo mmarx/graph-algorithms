@@ -14,6 +14,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <string>
 #include <iostream>
 
 #include "graph.hpp"
@@ -21,53 +22,85 @@
 #include "kruskal.hpp"
 #include "ford_moore.hpp"
 
+using std::cerr;
 using std::cout;
 using std::endl;
+using std::string;
 
 typedef double weight_type;
 typedef Directed_Graph<weight_type> DG;
 typedef Undirected_Graph<weight_type> UG;
 
+void usage(string name)
+{
+  cerr << "usage: " << name << " <mode> <input file>" << endl
+       << "where mode is one of:" << endl
+       << "\t--shortest\t\tFord/Moore shortest paths" << endl
+       << "\t--longest\t\tFord/Moore longest paths" << endl
+       << "\t--kruskal\t\tKruskal minimal spanning tree" << endl
+       << "\t--prim\t\tPrim minimal spanning tree" << endl;
+}
+
 int main(int argc, char** argv)
 {
-  (void) argc, (void) argv;
-
-  shared_ptr<DG> d = graph_from_file<weight_type>("examples/no-cycles.dat");
-
-  cout << (*d);
-
-  cout << endl << "Shortest paths:" << endl;
-
-  list<path<weight_type> > sp = ford_moore<weight_type, shortest_path_policy<weight_type> >(d);
-
-  for(list<path<weight_type> >::iterator i = sp.begin(); i != sp.end(); ++i)
+  if(argc < 3)
     {
-      cout << (*i);
+      usage(argv[0]);
+      return 1;
     }
 
-  cout << endl << "Longest paths:" << endl;
+  shared_ptr<DG> graph = graph_from_file<weight_type>(argv[2]);
+  cout << (*graph);
 
-  list<path<weight_type> > lp = ford_moore<weight_type,
-					   longest_path_policy<weight_type>
-					   >(d);
+  string mode = string(argv[1]);
 
-  for(list<path<weight_type> >::iterator i = lp.begin(); i != lp.end(); ++i)
+  if(mode == "--shortest")
     {
-      cout << (*i);
+      cout << endl << "Shortest paths:" << endl;
+
+      list<path<weight_type> > sp =
+	ford_moore<weight_type, shortest_path_policy<weight_type> >(graph);
+
+      for(list<path<weight_type> >::iterator i = sp.begin();
+	  i != sp.end(); ++i)
+	{
+	  cout << (*i);
+	}
     }
+  else if(mode == "--longest")
+    {
+      cout << endl << "Longest paths:" << endl;
 
-  cout << endl << "Minimal spanning tree (Prim):" << endl;
+      list<path<weight_type> > lp =
+	ford_moore<weight_type, longest_path_policy<weight_type> >(graph);
 
-  shared_ptr<UG> u = undirected_from_graph(d);
-  shared_ptr<UG> p = prim(u);
+      for(list<path<weight_type> >::iterator i = lp.begin();
+	  i != lp.end(); ++i)
+	{
+	  cout << (*i);
+	}
+    }
+  else if(mode == "--kruskal")
+    {
+      cout << endl << "Minimal spanning tree (Kruskal):" << endl;
 
-  cout << (*p);
+      shared_ptr<UG> k = kruskal(undirected_from_graph(graph));
 
-  cout << endl << "Minimal spanning tree (Kruskal):" << endl;
+      cout << (*k);
+    }
+  else if(mode == "--prim")
+    {
+      cout << endl << "Minimal spanning tree (Prim):" << endl;
 
-  shared_ptr<UG> k = kruskal(u);
+      shared_ptr<UG> p = prim(undirected_from_graph(graph));
 
-  cout << (*k);
+      cout << (*p);
+    }
+  else
+    {
+      usage(argv[0]);
+      return 1;
+    }
 
   return 0;
 }

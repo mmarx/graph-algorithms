@@ -246,11 +246,6 @@ public:
     return vertices_;
   }
 
-  int edge_count() const
-  {
-    return edges_;
-  }
-
   int source() const
   {
     return source_;
@@ -299,7 +294,6 @@ protected:
   }
 
 private:
-  int edges_;
   int source_;
   int vertices_;
   shared_ptr<shared_ptr<W> > adjacency_;

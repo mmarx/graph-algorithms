@@ -20,22 +20,16 @@ clean:
 strip: fm
 	strip -s $(<)
 
-doc-clean:
-	rm -rf doc/html
-
-doc: Doxyfile $(SOURCES)
-	doxygen $(<)
-
-dist: clean doc-clean fm strip doc
+dist: clean fm strip
 	git archive --format=zip --output=$(DIST_ARCHIVE_FILE) HEAD
-	zip -r $(DIST_ARCHIVE_FILE) .git doc/
+	zip -r $(DIST_ARCHIVE_FILE) .git/
 
 depend:
 	makedepend $(CXXSTDINCLUDES) -- $(CXXFLAGS) -- $(SOURCES) 2&> /dev/null
 
 all: strip
 
-.PHONY: clean doc all
+.PHONY: clean all
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

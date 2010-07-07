@@ -30,21 +30,28 @@ using std::numeric_limits;
 template<typename W>
 class Directed_Graph;
 
+/**
+ * edge iterator, allows to enumerate a set of edges
+ */
 template<typename W>
 class directed_edge_iterator
 {
 private:
+  // construct an `end'-iterator
   directed_edge_iterator() : valid_(false) {}
 
+  // construct a valid iterator
   directed_edge_iterator(shared_ptr<Directed_Graph<W> > graph)
     : graph_(graph), valid_(true), restrict_(false), incoming_(false),
       sink_(1), source_(1)
   {
+    // if we didn't start on an edge, find the first
     if(!have_edge())
       {
 	find_next_edge();
       }
 
+    // graph contains no edges
     if(!have_edge())
       {
 	valid_ = false;
@@ -52,27 +59,32 @@ private:
       }
   }
 
+  // construct a restricted iterator
   directed_edge_iterator(shared_ptr<Directed_Graph<W> > graph, int vertex,
 			 bool incoming = true)
     : graph_(graph), valid_(true), restrict_(true),
       incoming_(incoming)
   {
+    // we want incoming edges
     if(incoming)
       {
 	sink_ = vertex;
 	source_ = 1;
       }
+    // outgoing edges
     else
       {
 	sink_ = 1;
 	source_ = vertex;
       }
 
+    // find a valid edge
     if(!have_edge())
       {
 	find_next_edge();
       }
 
+    // if we still don't have a valid edge, there are none
     if(!have_edge())
       {
 	valid_ = false;
@@ -90,6 +102,10 @@ private:
 
   friend class Directed_Graph<W>;
 
+  /**
+   * is the current edge valid?
+   * @return true if the current edge is valid
+   */
   bool have_edge()
   {
     int n = graph_->vertex_count();
@@ -98,10 +114,14 @@ private:
 	    && (weight() != numeric_limits<W>::infinity()));
   }
 
+  /**
+   * find the next valid edge
+   */
   void find_next_edge()
   {
     int n = graph_->vertex_count();
 
+    // unrestricted
     if(!restrict_)
       {
 	for(; source_ <= n; ++source_, sink_ = 0)
@@ -145,21 +165,37 @@ private:
 public:
   ~directed_edge_iterator() {}
 
+  /**
+   * get the current edge weight
+   * @return edge weight
+   */
   W const weight() const
   {
     return graph_->weight(source_, sink_);
   }
 
+  /**
+   * get the current source
+   * @return source
+   */
   int source() const
   {
     return source_;
   }
 
+  /**
+   * get the current sink
+   * @return sink
+   */
   int sink() const
   {
     return sink_;
   }
 
+  /**
+   * advance the iterator
+   * @return reference to self
+   */
   directed_edge_iterator& operator++()
   {
     find_next_edge();
@@ -174,17 +210,33 @@ public:
     return *this;
   }
 
+  /**
+   * compare two iterators, they are considered equal
+   * if the belong to the same graph and have the same
+   * state.
+   * @return true if the iterators are equivalent
+   */
   bool operator==(directed_edge_iterator<W> const&  other) const
   {
     return (valid_ == other.valid_) && (graph_.get() == other.graph_.get());
   }
 
+  /**
+   * compare two iterators
+   * @return true if the iterators are not equivalent
+   */
   bool operator!=(directed_edge_iterator<W> const& other) const
   {
     return !(*this == other);
   }
 };
 
+/**
+ * print out edge information
+ * @param out output stream
+ * @paramt e edge iterator
+ * @return output stream
+ */
 template<typename W>
 ostream& operator<<(ostream& out, directed_edge_iterator<W> const& e)
 {
@@ -196,12 +248,20 @@ ostream& operator<<(ostream& out, directed_edge_iterator<W> const& e)
   return out;
 }
 
+/**
+ * Directed graph
+ */
 template<typename W>
 class Directed_Graph : public enable_shared_from_this<Directed_Graph<W> >
 {
 public:
   typedef directed_edge_iterator<W> iterator;
 
+  /**
+   * construct a new directed graph
+   * @param vertices number of vertices
+   * @param source source vertex
+   */
   Directed_Graph(int vertices,
 		 int source) : source_(source), vertices_(vertices),
 			       adjacency_(shared_array<
@@ -219,6 +279,10 @@ public:
       }
   }
 
+  /**
+   * return an `end' iterator
+   * @return invalid iterator
+   */
   iterator& end() const
   {
     static iterator the_end = iterator();
@@ -226,41 +290,80 @@ public:
     return the_end;
   }
 
+  /**
+   * enumerate all edges
+   * @return iterator over all edges
+   */
   iterator edges()
   {
     return iterator(this->shared_from_this());
   }
 
+  /**
+   * enumerate entering edges
+   * @param vertex the vertex
+   * @return iterator over edges entering vertex
+   */
   iterator entering(int vertex)
   {
     return iterator(this->shared_from_this(), vertex, true);
   }
 
+  /**
+   * enumerate leavirg edges
+   * @param vertex the vertex
+   * @return iterator over edges leaving vertex
+   */
   iterator leaving(int vertex)
   {
     return iterator(this->shared_from_this(), vertex, false);
   }
 
+  /**
+   * get the number of vertices
+   * @return vertex count
+   */
   int vertex_count() const
   {
     return vertices_;
   }
 
+  /**
+   * return the source vertex
+   * @return source vertex
+   */
   int source() const
   {
     return source_;
   }
 
+  /**
+   * get the edge weight
+   * @param source source vertex
+   * @param sink sink vertex
+   * @return edge weight
+   */
   W weight(int source, int sink) const
   {
     return adj(source, sink);
   }
 
+  /**
+   * add an edge
+   * @param source source vertex
+   * @param sink sink vertex
+   * @param weight edge weight
+   */
   void add_edge(int source, int sink, W weight)
   {
     adj(source, sink) = weight;
   }
 
+  /**
+   * print an adjacency matrix
+   * @param out output stream
+   * @return output stream
+   */
   ostream& format_adjacency(ostream& out) const
   {
     using std::endl;
@@ -278,16 +381,29 @@ public:
   }
 
 protected:
-  // helpers for adjacency matrix indexing
-  // TR1 doesn't specify shared_array which has operator[],
-  // so we wouldn't need this .get()[] magic, but we'd have
-  // to depend on boost
+  /* helpers for adjacency matrix indexing
+   * TR1 doesn't specify shared_array which has operator[],
+   * so we wouldn't need this .get()[] magic, but we'd have
+   * to depend on boost
+   */
 
+  /**
+   * adjacency matrix entry
+   * @param source source vertex
+   * @param sink sink vertex
+   * @return adjacency matrix entry
+   */
   W& adj(int source, int sink)
   {
     return adjacency_.get()[source - 1].get()[sink - 1];
   }
 
+  /**
+   * adjacency matrix entry
+   * @param source source vertex
+   * @param sink sink vertex
+   * @return adjacency matrix entry
+   */
   W adj(int source, int sink) const
   {
     return adjacency_.get()[source - 1].get()[sink - 1];
@@ -301,13 +417,28 @@ private:
   friend class directed_edge_iterator<W>;
 };
 
+/**
+ * Undirected graph, implemented as a special
+ * directed graph
+ */
 template<typename W>
 class Undirected_Graph : public Directed_Graph<W>
 {
 public:
+  /**
+   * construct an undirected graph
+   * @param vertices number of vertices
+   * @param source source vertex
+   */
   Undirected_Graph(int vertices, int source)
     : Directed_Graph<W>(vertices, source) {}
 
+  /**
+   * add an edge
+   * @param source source vertex
+   * @param sink sink vertex
+   * @param weight edge weight
+   */
   void add_edge(int source, int sink, W weight)
   {
     this->adj(source, sink) = weight;
@@ -315,6 +446,12 @@ public:
   }
 };
 
+/**
+ * print out graph information
+ * @param out output stream
+ * @param g directed graph
+ * @return output stream
+ */
 template<typename W>
 ostream& operator<<(ostream& out, Directed_Graph<W>& g)
 {
@@ -338,6 +475,11 @@ ostream& operator<<(ostream& out, Directed_Graph<W>& g)
   return out;
 }
 
+/**
+ * create a graph from an input file
+ * @param filename file name
+ * @return directed graph
+ */
 template<typename W>
 shared_ptr<Directed_Graph<W> > graph_from_file(string const& filename)
 {
@@ -373,6 +515,11 @@ shared_ptr<Directed_Graph<W> > graph_from_file(string const& filename)
   return graph;
 }
 
+/**
+ * create an undirected graph from a directed graph
+ * @param graph the directed graph
+ * @param return the undirected graph
+ */
 template<typename W>
 shared_ptr<Undirected_Graph<W> >
 undirected_from_graph(shared_ptr<Directed_Graph<W> > graph)

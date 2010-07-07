@@ -25,12 +25,24 @@
 using std::list;
 using std::vector;
 
+/**
+ * edge preference policy
+ */
 template<typename W>
 struct policy
 {
+  /**
+   * determine which edge is better
+   * @param l edge weight
+   * @param r edge weight
+   * @return true if l is better than r
+   */
   virtual bool better(W l, W r) = 0;
 };
 
+/**
+ * policy prefering shorter paths
+ */
 template<typename W>
 struct shortest_path_policy
 {
@@ -40,6 +52,9 @@ struct shortest_path_policy
   }
 };
 
+/**
+ * policy prefering longer paths
+ */
 template<typename W>
 struct longest_path_policy
 {
@@ -52,15 +67,28 @@ struct longest_path_policy
   }
 };
 
+/**
+ * path
+ */
 template<typename W>
 struct path
 {
   W cost;
   list<int> vertices;
 
+  /**
+   * construct a path
+   * @param end end vertex
+   */
   path(int end) : cost(0), vertices(list<int>(1, end)) {}
 };
 
+/**
+ * print a path
+ * @param out output stream
+ * @param p path
+ * @return output stream
+ */
 template<typename W>
 ostream& operator<<(ostream& out, path<W> const& p)
 {
@@ -90,6 +118,11 @@ ostream& operator<<(ostream& out, path<W> const& p)
   return out;
 }
 
+/**
+ * Ford/Moore algorithm
+ * @param graph directed graph
+ * @return list of best paths according to policy
+ */
 template<typename W, typename P>
 list<path<W> > ford_moore(shared_ptr<Directed_Graph<W> > graph)
 {
@@ -131,6 +164,7 @@ list<path<W> > ford_moore(shared_ptr<Directed_Graph<W> > graph)
     }
   while((k < n) && B.size());
 
+  // build the list of paths
   for(int i = 0; i < n; ++i)
     {
       if(s == (i + 1))

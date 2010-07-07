@@ -27,10 +27,15 @@ using std::cout;
 using std::endl;
 using std::string;
 
+// shortcuts
 typedef double weight_type;
 typedef Directed_Graph<weight_type> DG;
 typedef Undirected_Graph<weight_type> UG;
 
+/**
+ * print usage information
+ * @param name program name
+ */
 void usage(string name)
 {
   cerr << "usage: " << name << " <mode> <input file>" << endl
@@ -41,6 +46,12 @@ void usage(string name)
        << "\t--prim\t\tPrim minimal spanning tree" << endl;
 }
 
+/**
+ * main function
+ * @param argc number of CLI arguments
+ * @param argv array of CLI arguments
+ * @return 0 in case of success, 1 otherwise
+ */
 int main(int argc, char** argv)
 {
   if(argc < 3)
@@ -49,11 +60,14 @@ int main(int argc, char** argv)
       return 1;
     }
 
+  // read the graph
   shared_ptr<DG> graph = graph_from_file<weight_type>(argv[2]);
-  cout << (*graph);
+  cout << (*graph); // ...and print it
 
+  // what are we supposed to do with it?
   string mode = string(argv[1]);
 
+  // shortest paths
   if(mode == "--shortest")
     {
       cout << endl << "Shortest paths:" << endl;
@@ -67,6 +81,7 @@ int main(int argc, char** argv)
 	  cout << (*i);
 	}
     }
+  // longest paths
   else if(mode == "--longest")
     {
       cout << endl << "Longest paths:" << endl;
@@ -80,6 +95,7 @@ int main(int argc, char** argv)
 	  cout << (*i);
 	}
     }
+  // kruskal
   else if(mode == "--kruskal")
     {
       cout << endl << "Minimal spanning tree (Kruskal):" << endl;
@@ -88,6 +104,7 @@ int main(int argc, char** argv)
 
       cout << (*k);
     }
+  // prim
   else if(mode == "--prim")
     {
       cout << endl << "Minimal spanning tree (Prim):" << endl;
@@ -96,6 +113,7 @@ int main(int argc, char** argv)
 
       cout << (*p);
     }
+  // don't know, report error
   else
     {
       usage(argv[0]);

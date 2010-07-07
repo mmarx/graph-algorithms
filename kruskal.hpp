@@ -27,6 +27,9 @@ using std::list;
 using std::vector;
 using std::min_element;
 
+/**
+ * edge
+ */
 template<typename W>
 struct edge
 {
@@ -34,14 +37,30 @@ struct edge
   int sink;
   W weight;
 
+  /**
+   * create an edge
+   * @param so source vertex
+   * @param si sink vertex
+   * @param we edge weight
+   */
   edge(int so, int si, W we) : source(so), sink(si), weight(we) {}
 
+  /**
+   * compare two edges
+   * @param other right hand side
+   * @return true if we are better than the other edge
+   */
   bool operator<(edge const& other)
   {
     return weight < other.weight;
   }
 };
 
+/**
+ * Kruskal's algorithm
+ * @param graph undirected graph
+ * @return undirected graph that is a minimal spanning tree
+ */
 template<typename W>
 shared_ptr<Undirected_Graph<W> > kruskal(shared_ptr<Undirected_Graph<W> >
 					 graph)

@@ -25,6 +25,11 @@
 using std::find;
 using std::vector;
 
+/**
+ * Prim's algorithm
+ * @param graph undirected graph
+ * @return undirected graph that is a minimal spanning tree
+ */
 template<typename W>
 shared_ptr<Undirected_Graph<W> > prim(shared_ptr<Undirected_Graph<W> > graph)
 {
